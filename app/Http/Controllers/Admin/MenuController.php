@@ -65,12 +65,15 @@ class MenuController extends Controller {
         foreach ($menu as $mn) {
             $submenu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $mn->id");
             if ($submenu) {
-                $html .= "<div data-kt-menu-trigger='click' data-kt-menu-placement='bottom-start' class='menu-item menu-lg-down-accordion me-lg-1'>
-                <span class='menu-link  py-3'>
+                $html .= " <div data-kt-menu-trigger='click' class='menu-item menu-accordion'>
+                <span class='menu-link'>
+                    <span class='menu-icon'>
+                        <i class='fa-solid fa-$mn->icon'></i>
+                    </span> 
                     <span class='menu-title'>$mn->name</span>
-                    <span class='menu-arrow d-lg-none'></span>
-                </span>
-                <div class='menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-rounded-0 py-lg-4 w-lg-225px'>";
+                    <span class='menu-arrow'></span>
+                </span> 
+                <div class='menu-sub menu-sub-accordion menu-active-bg'>";
 
 
 
@@ -80,49 +83,47 @@ class MenuController extends Controller {
 
 
                     if ($subOnSubmenu) {
-                        $html .= "<div data-kt-menu-trigger=" . $tandapetik . "{default:'click', lg: 'hover'}" . $tandapetik . " data-kt-menu-placement='right-start' class='menu-item menu-lg-down-accordion'>
-                        <span class='menu-link py-3'>
-                            <span class='menu-icon'>
-                                <span class='svg-icon svg-icon-2'>
-                                    <i class='bi bi-$sm->icon'></i>
-                                </span>
+                        $html .= "<div data-kt-menu-trigger='click' class='menu-item menu-accordion'>
+                        <span class='menu-link'>
+                            <span class='menu-bullet'>
+                                <span class='bullet bullet-dot'></span>
                             </span>
-                            <span class='menu-title text-gray-700'>$sm->name</span>
+                            <span class='menu-title'>$sm->name</span>
                             <span class='menu-arrow'></span>
                         </span>
-                        <div class='menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-active-bg py-lg-4 w-lg-225px'>";
+                        <div class='menu-sub menu-sub-accordion menu-active-bg'>";
 
                         foreach ($subOnSubmenu as $sosm) {
-                            $html .= "<div class='menu-item'>
-                                        <a class='menu-link py-3' href='$sosm->url'>
-                                            <span class='menu-bullet'>
-                                                <span class='bullet bullet-dot'></span>
-                                            </span>
-                                            <span class='menu-title  text-gray-700'>$sosm->name</span>
-                                        </a>
-                                    </div>";
+                            $html .= " <div class='menu-item'>
+                            <a class='menu-link' href='$sosm->url'>
+                                <span class='menu-bullet'>
+                                    <span class='bullet bullet-dot'></span>
+                                </span>
+                                <span class='menu-title'>$sosm->name</span>
+                            </a>
+                        </div>";
                         }
                         $html .= "</div></div>";
                     } else {
                         $html .= "<div class='menu-item'>
-                        <a class='menu-link py-3' href='$sm->url'  data-bs-toggle='tooltip' data-bs-trigger='hover' data-bs-dismiss='click' data-bs-placement='right'>
-                        <span class='menu-icon'>
-                        <span class='svg-icon svg-icon-2'>
-                        <i class='bi bi-$sm->icon'></i>
-                        </span>
-                        </span>
-                        <span class='menu-title text-gray-700'>$sm->name</span>
+                        <a class='menu-link' href='$sm->url'>
+                            <span class='menu-bullet'>
+                                <span class='bullet bullet-dot'></span>
+                            </span>
+                            <span class='menu-title'>$sm->name</span>
                         </a>
-                        </div>";
+                    </div>";
                     }
                 }
                 $html .= '</div></div>';
             } else {
-                $html .= "<div data-kt-menu-placement='bottom-start' class='menu-item menu-lg-down-accordion me-lg-1'>
-                <a class='menu-link py-3' href='$mn->url'>
-                <span class='menu-title'>$mn->name</span>
-                <span class='menu-arrow d-lg-none'></span>
-                </a>
+                $html .= "<div class='menu-item'>
+                    <a class='menu-link' href='$mn->url'>
+                        <span class='menu-icon'>
+                        <i class='fa-solid fa-$mn->icon'></i>
+                        </span>
+                        <span class='menu-title'>$mn->name</span>
+                    </a>
                 </div>";
             }
         }

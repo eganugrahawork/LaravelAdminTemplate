@@ -19,6 +19,7 @@ Route::middleware('auth')->get('/settings', function(){
 
 Route::middleware('auth')->controller(DashboardController::class)->group(function () {
     Route::get('/admin/dashboard', 'index');
+    Route::get('/admin/dashboard/templates', 'templates');
 });
 
 Auth::routes();

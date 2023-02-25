@@ -2,7 +2,7 @@
     <form class="form">
         @csrf
         <div class="modal-header" id="kt_modal_add_customer_header">
-            <h2 class="fw-bolder">Add a Customer</h2>
+            <h2 class="fw-bolder">Add Menu</h2>
             <div class="btn btn-icon btn-sm btn-active-icon-primary" onclick="tutupModal()">
                 <span class="svg-icon svg-icon-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -61,7 +61,7 @@
 
 <script>
     $('.select-2').select2({
-        dropdownParent: $('#mainModal')
+        dropdownParent: $('#contentModal')
     });
 
     $('form').submit(function(event) {
