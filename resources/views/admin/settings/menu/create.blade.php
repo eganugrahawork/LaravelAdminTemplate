@@ -50,7 +50,12 @@
                     <i class="fas fa-exclamation-circle ms-2 fs-7"
                         title="Permission Icon is required to be unique."></i>
                 </label>
-                <input class="form-control form-control-solid" placeholder="Enter a icon" name="icon" />
+                <div class="position-relative">
+                    <input class="form-control form-control-solid" placeholder="Enter a icon" name="icon" />
+                    <div class="position-absolute translate-middle-y top-50 end-0 me-3">
+                        <i class="las la-highlighter"></i>
+                    </div>
+                </div>
             </div>
             <div class="text-gray-600">Attention,
                 <strong class="me-1">URL and Icon</strong> can have null value, you can fill with
@@ -69,125 +74,4 @@
 
 </div>
 
-<script>
-    $('.select-2').select2({
-        dropdownParent: $('#contentMainModal')
-    });
-
-
-
-    var form = document.getElementById('formCreate');
-    var validator = FormValidation.formValidation(form, {
-        fields: {
-            parent: {
-                validators: {
-                    notEmpty: {
-                        message: "Parent is required"
-                    },
-                    integer: {
-                        message: "Please Select Your Choice !"
-                    }
-                }
-            },
-            name: {
-                validators: {
-                    notEmpty: {
-                        message: "Menu name is required"
-                    }
-                }
-            },
-            url: {
-                validators: {
-                    notEmpty: {
-                        message: "Menu Url is required"
-                    }
-                }
-            },
-            icon: {
-                validators: {
-                    notEmpty: {
-                        message: "Menu Icon is required"
-                    }
-                }
-            },
-        },
-        plugins: {
-            trigger: new FormValidation.plugins.Trigger,
-            bootstrap: new FormValidation.plugins.Bootstrap5({
-                rowSelector: ".fv-row",
-                eleInvalidClass: "is-invalid",
-                eleValidClass: "is-valid"
-            })
-        }
-    });
-
-
-    var submitButton = document.getElementById('submitForm');
-    submitButton.addEventListener('click', function(e) {
-        // Prevent default button action
-        e.preventDefault();
-
-        // Validate form before submit
-        if (validator) {
-            validator.validate().then(function(status) {
-                console.log('status');
-                if (status == 'Valid') {
-
-                    submitButton.setAttribute("data-kt-indicator", "on");
-                    submitButton.setAttribute('disabled', true);
-
-                    Swal.fire({
-                        text: "Form has been successfully submitted!",
-                        icon: "success",
-                        buttonsStyling: !1,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    }).then((function(t) {
-                        $.ajax({
-                            url: "{{ url('/admin/menu/store') }}",
-                            type: 'post',
-                            data: $('#formCreate')
-                                .serialize(), // Remember that you need to have your csrf token included
-                            dataType: 'json',
-                            success: function(response) {
-                                $('#mainModal').modal('toggle')
-                            },
-                            error: function(response) {
-                                Swal.fire({
-                                    text: "Sorry, looks like there are some errors detected, please try again.",
-                                    icon: "error",
-                                    buttonsStyling: !1,
-                                    confirmButtonText: "Ok, got it!",
-                                    customClass: {
-                                        confirmButton: "btn btn-primary"
-                                    }
-                                })
-
-
-                                submitButton.setAttribute("data-kt-indicator",
-                                    "off");
-                                submitButton.removeAttribute("disabled");
-                            }
-                        });
-
-                    }))
-                } else {
-                    Swal.fire({
-                        text: "Sorry, looks like there are some errors detected, please try again.",
-                        icon: "error",
-                        buttonsStyling: !1,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    })
-
-                    submitButton.setAttribute("data-kt-indicator", "off");
-                    submitButton.setAttribute('disabled', false);
-                }
-            });
-        }
-    });
-</script>
+<script src="/assets/metronic/js/custom/apps/user-management/menu/create.js"></script>

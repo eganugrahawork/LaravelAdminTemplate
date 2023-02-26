@@ -18,7 +18,7 @@ class MenuSeeder extends Seeder
             'parent' => 0,
             'name' => 'Dashboard',
             'url'=> '/admin/dashboard',
-            'icon'=> '-',
+            'icon'=> 'speedometer',
             'status'=> 1
         ]);
         Menu::create([
@@ -32,14 +32,14 @@ class MenuSeeder extends Seeder
             'parent' => 0,
             'name' => 'Master Data',
             'url'=> '/admin/masterdata',
-            'icon'=> '-',
+            'icon'=> 'clipboard-data',
             'status'=> 1
         ]);
         Menu::create([
             'parent' => 3,
             'name' => 'Partner',
             'url'=> '/admin/partner',
-            'icon'=> 'people',
+            'icon'=> '-',
             'status'=> 1
         ]);
     }

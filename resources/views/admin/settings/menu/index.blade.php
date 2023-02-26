@@ -48,7 +48,7 @@
                                     <th class="min-w-125px">Name</th>
                                     <th class="min-w-125px">Url</th>
                                     <th class="min-w-125px">Icon</th>
-                                    <th class="min-w-125px">Status</th>
+                                    <th class="min-w-70px">Status</th>
                                     <th class="text-end min-w-100px">Actions</th>
                                 </tr>
                             </thead>

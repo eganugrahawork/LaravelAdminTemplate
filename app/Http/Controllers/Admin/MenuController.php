@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\DataTables;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Validator;
 
 class MenuController extends Controller {
     public function index() {
@@ -23,9 +24,9 @@ class MenuController extends Controller {
             $data = DB::table('menus as a')
                 ->leftJoin('menus as b', 'a.parent', '=', 'b.id')
                 ->select('a.*', DB::raw('IFNULL(b.name, "Main Parent") AS parent_name'))
+                ->where('a.is_deleted', '=', 0)
                 ->where('a.name', 'like', "%{$search}%")
-                ->orWhere('b.name', 'like', "%{$search}%")
-                ->orderBy('a.created_at', 'desc')
+                ->orderBy('a.updated_at', 'desc')
                 ->offset($offset)
                 ->limit($limit)
                 ->get();
@@ -33,7 +34,8 @@ class MenuController extends Controller {
             $data = DB::table('menus as a')
                 ->leftJoin('menus as b', 'a.parent', '=', 'b.id')
                 ->select('a.*', DB::raw('IFNULL(b.name, "Main Parent") AS parent_name'))
-                ->orderBy('a.created_at', 'desc')
+                ->where('a.is_deleted', '=', 0)
+                ->orderBy('a.updated_at', 'desc')
                 ->offset($offset)
                 ->limit($limit)
                 ->get();
@@ -44,9 +46,10 @@ class MenuController extends Controller {
        $total = DB::table('menus')->count();
 
         $countFiltered = DB::table('menus as a')
+            ->where('a.is_deleted', '=', 0)
             ->leftJoin('menus as b', 'a.parent', '=', 'b.id')
             ->select('a.*', DB::raw('IFNULL(b.name, "Main Parent") AS parent_name'))
-            ->orderBy('a.created_at', 'desc');
+            ->orderBy('a.updated_at', 'desc');
 
         if (!empty($search)) {
             $countFiltered->where(function($query) use($search) {
@@ -59,20 +62,51 @@ class MenuController extends Controller {
 
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($model) {
-                $action = "";
-                $action .= "<a onclick='editModal($model->id)' class='btn btn-sm btn-icon btn-warning btn-hover-rise me-1'><i class='bi bi-pencil-square'></i></a>";
-                $action .= " <a onclick='deleteModal($model->id)' class='btn btn-sm btn-icon btn-danger btn-hover-rise me-1'><i class='bi bi-trash'></i></a>";
+                $action = '';
+                $action .= "<button class='btn btn-icon btn-active-light-primary w-30px h-30px me-3' type='button' onclick='showEditModal($model->id)'>
+                            <span class='svg-icon svg-icon-3'>
+                                <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+                                    <path d='M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z' fill='black'></path>
+                                    <path opacity='0.3' d='M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z' fill='black'></path>
+                                </svg>
+                            </span>
+                        </button>";
+                $action .= "<button class='btn btn-icon btn-active-light-primary w-30px h-30px' type='button' onclick='deleteList($model->id)'>
+                <span class='svg-icon svg-icon-3'>
+                    <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+                        <path d='M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z' fill='black'></path>
+                        <path opacity='0.5' d='M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z' fill='black'></path>
+                        <path opacity='0.5' d='M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z' fill='black'></path>
+                    </svg>
+                </span>
+            </button>";
 
                 return $action;
             })->addColumn('status', function($model){
                 if($model->status == 1){
-                    $status = '<div class="badge badge-light-success fw-bolder">Active</div>';
+                    $status = '<div class="badge badge-light-success fs-7 m-1 fw-bolder">Active</div>';
                 }else{
-                    $status = '<div class="badge badge-light-danger fw-bolder">Not Active</div>';
+                    $status = '<div class="badge badge-light-danger fs-7 m-1 fw-bolder">Not Active</div>';
                 }
 
                 return $status;
-            })->rawColumns(['action', 'status'])
+            })->addColumn('parent_name', function($model){
+                if($model->parent_name == 'Main Parent'){
+                    $parent_name = '<div class="badge badge-light-danger fs-7 m-1 fw-bolder">'.$model->parent_name.'</div>';
+                }else{
+                    $parent_name = '<div class="badge badge-light-primary fs-7 m-1 fw-bolder">'.$model->parent_name.'</div>';
+                }
+
+                return $parent_name;
+            })->addColumn('icon', function($model){
+                if($model->icon !== '-'){
+                    $parent_name = "<i class='bi bi-$model->icon text-primary'></i>";
+                }else{
+                    $parent_name = '<div class="badge badge-light-danger fw-bolder">Nothing</div>';
+                }
+
+                return $parent_name;
+            })->rawColumns(['action', 'status', 'parent_name', 'icon'])
             ->with('recordsTotal', $total)
             ->with('recordsFiltered', $countFiltered)
             ->setOffset((int)$offset)
@@ -83,43 +117,130 @@ class MenuController extends Controller {
         return view('admin.settings.menu.create', ['menu' => Menu::all()]);
     }
     public function store(Request $request) {
-        dd($request);
-        Menu::create([
-            'parent' => $request->parent,
-            'name' => $request->name,
-            'url' => $request->url,
-            'icon' => $request->icon,
-            'status' => $request->status
-        ]);
-        return response()->json(['success' => 'Menu Created']);
+        $validator = Validator::make(
+            $request->all(),
+        [
+            'parent' => 'required|integer',
+            'name' => 'required|string|min:2|max:30',
+            'url' => 'required|string|min:1|max:100',
+            'icon' => 'required|string|min:1|max:30',
+        ], 
+        [
+            'required' => ':attribute harus diisi',
+            'integer' => ':attribute harus berupa angka',
+            'string' => ':attribute harus berupa teks',
+            'min' => ':attribute minimal :min karakter',
+            'max'=> ':attribute tidak boleh lebih dari :max karakter'
+        ]
+        );
+        
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors],422);
+        }
+        DB::beginTransaction();
+
+        try {
+            $menu = new Menu([
+                'parent' => $request->parent,
+                'name' => $request->name,
+                'url' => $request->url,
+                'icon' => $request->icon,
+                'status' => 1
+            ]);
+        
+            $menu->save();
+        
+            DB::commit();
+            Session::forget('menu');
+            return response()->json(['success' => 'Menu Created']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            $errors = [
+                "Gagal Menyimpan Ke Database"
+            ];
+            return response()->json(['errors' => $errors],422);
+        }
+       
     }
 
-    public function edit(Request $request) {
+    public function edit($id) {
 
-        return view('admin.settings.menu.edit', ['menu' => Menu::all(), 'onMenu' => Menu::where(['id' => $request->id])->first()]);
+        return view('admin.settings.menu.edit', ['menu' => Menu::all(), 'onMenu' => Menu::where(['id' => $id])->first()]);
     }
 
     public function update(Request $request) {
-        Menu::where(['id' => $request->id])->update([
-            'parent' => $request->parent,
-            'name' => $request->name,
-            'url' => $request->url,
-            'icon' => $request->icon,
-            'status' => $request->status
-        ]);
-        return response()->json(["success" => "Data $request->name Updated"]);
+        $validator = Validator::make(
+            $request->all(),
+        [
+            'id' => 'required',
+            'parent' => 'required|integer',
+            'name' => 'required|string|min:2|max:30',
+            'url' => 'required|string|min:1|max:100',
+            'icon' => 'required|string|min:1|max:30',
+            'status' => 'required',
+        ], 
+        [
+            'required' => ':attribute harus diisi',
+            'integer' => ':attribute harus berupa angka',
+            'string' => ':attribute harus berupa teks',
+            'min' => ':attribute minimal :min karakter',
+            'max'=> ':attribute tidak boleh lebih dari :max karakter'
+        ]
+        );
+        
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors],422);
+        }
+        DB::beginTransaction();
+
+        try {
+            Menu::where(['id' => $request->id])->update([
+                'parent' => $request->parent,
+                'name' => $request->name,
+                'url' => $request->url,
+                'icon' => $request->icon,
+                'status' => $request->status
+            ]);
+        
+            DB::commit();
+            Session::forget('menu');
+            return response()->json(['success' => 'Menu Updated']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            $errors = [
+                "Gagal Menyimpan Ke Database"
+            ];
+            return response()->json(['errors' => $errors],422);
+        }
+       
     }
 
     public function destroy(Request $request) {
-        Menu::where(['id' => $request->id])->delete();
+        DB::beginTransaction();
+
+        try {
+            Menu::where(['id' => $request->id])->update(['is_deleted' => 1]);
+            DB::commit();
+            Session::forget('menu');
+            return response()->json(['success' => 'Menu Deleted']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            $errors = [
+                "Gagal Menyimpan Ke Database"
+            ];
+            return response()->json(['errors' => $errors],422);
+        }
+       
         return response()->json(["success" => "Data Deleted"]);
     }
 
     public function loadmenu(Request $request) {
-        $menu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $request->parent");
+        $menu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $request->parent and b.is_deleted = 0");
         $html = '';
         foreach ($menu as $mn) {
-            $submenu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $mn->id");
+            $submenu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $mn->id and b.is_deleted = 0");
             if ($submenu) {
                 $html .= " <div data-kt-menu-trigger='click' class='menu-item menu-accordion'>
                 <span class='menu-link'>
@@ -135,7 +256,7 @@ class MenuController extends Controller {
 
                 foreach ($submenu as $sm) {
                     $tandapetik = '"';
-                    $subOnSubmenu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $sm->id");
+                    $subOnSubmenu = DB::select("select b.id, b.parent, b.name, b.url, b.icon from menu_accesses a join menus b on a.menu_id = b.id where a.role_id = $request->role_id and status = 1 and b.parent = $sm->id and b.is_deleted = 0");
 
 
                     if ($subOnSubmenu) {

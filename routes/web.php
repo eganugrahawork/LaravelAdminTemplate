@@ -34,7 +34,7 @@ Route::middleware('auth')->controller(MenuController::class)->group(function(){
     Route::get('/admin/menu/edit/{id}', 'edit');
     Route::post('/admin/menu/store', 'store');
     Route::post('/admin/menu/update', 'update');
-    Route::get('/admin/menu/delete/{id}', 'destroy');
+    Route::get('/admin/menu/destroy/{id}', 'destroy');
     Route::get('/admin/menu/loadmenu/{parent}/{role_id}', 'loadmenu');
 });
 

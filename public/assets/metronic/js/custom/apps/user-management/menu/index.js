@@ -34,6 +34,29 @@ function showAddModal() {
     });
 }
 
+function showEditModal(id) {
+    $.ajax({
+        url: "/admin/menu/edit/" + id,
+        type: 'get',
+        success: function (response) {
+            // console.log(response);
+            $('#mainModal').modal('toggle')
+            $('#contentMainModal').html(response);
+        },
+        error: function (response) {
+            Swal.fire({
+                text: "Cannot Open Modal,",
+                icon: "error",
+                buttonsStyling: !1,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                }
+            })
+        },
+    });
+}
+
 function closeMainModal() {
     Swal.fire({
         text: "Are you sure you would like to close?",
@@ -48,6 +71,59 @@ function closeMainModal() {
         }
     }).then((function (t) {
         $('#mainModal').modal('toggle');
+    }))
+}
+
+function deleteList(id) {
+    Swal.fire({
+        text: "Are you sure you want to delete ?",
+        icon: "warning",
+        showCancelButton: !0,
+        buttonsStyling: !1,
+        confirmButtonText: "Yes, delete!",
+        cancelButtonText: "No, cancel",
+        customClass: {
+            confirmButton: "btn fw-bold btn-danger",
+            cancelButton: "btn fw-bold btn-active-light-primary"
+        }
+    }).then((function (e) {
+        e.value ?
+            $.ajax({
+                url: "/admin/menu/destroy/" + id,
+                type: 'get',
+                success: function (response) {
+                    Swal.fire({
+                        text: response.success,
+                        icon: "success",
+                        buttonsStyling: !1,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    })
+                    tableMenu.ajax.reload();
+                },
+                error: function (response) {
+                    Swal.fire({
+                        text: "Cannot Open Modal,",
+                        icon: "error",
+                        buttonsStyling: !1,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    })
+                },
+            })
+            : "cancel" === e.dismiss && Swal.fire({
+                text: "Data was not deleted.",
+                icon: "question",
+                buttonsStyling: !1,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-primary"
+                }
+            })
     }))
 }
 
@@ -83,7 +159,8 @@ var tableMenu = $('#tableMenu').DataTable({
     },
     {
         data: 'icon',
-        name: 'icon'
+        name: 'icon',
+        className: 'text-center'
     },
     {
         data: 'status',
@@ -91,7 +168,8 @@ var tableMenu = $('#tableMenu').DataTable({
     },
     {
         data: 'action',
-        name: 'action'
+        name: 'action',
+        className: 'text-end'
     }
     ],
     "language": {
@@ -104,7 +182,7 @@ var tableMenu = $('#tableMenu').DataTable({
 });
 
 
-$('#searchtableMenu').keyup(function() {
+$('#searchtableMenu').keyup(function () {
     tableMenu.search($(this).val()).draw()
 });
 

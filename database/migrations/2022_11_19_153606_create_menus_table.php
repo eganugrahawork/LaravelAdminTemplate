@@ -19,7 +19,8 @@ class CreateMenusTable extends Migration
             $table->string('name');
             $table->string('url');
             $table->string('icon');
-            $table->integer('status');
+            $table->integer('status')->default(1);
+            $table->boolean('is_deleted')->default(0);
             $table->timestamps();
         });
     }
