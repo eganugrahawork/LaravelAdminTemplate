@@ -1,15 +1,14 @@
 "use strict";
 
 
-$('#title-header').html('Menu');
+$('#title-header').html('Roles');
 
-var pathArray = window.location.pathname.split('/');
 // Contoh nilai dari variabel pathArray: ["", "admin", "dashboard"]
 
 
 function showAddModal() {
     $.ajax({
-        url: "/admin/menu/create",
+        url: "/admin/role/create",
         type: 'get',
         success: function (response) {
             // console.log(response);
@@ -32,7 +31,7 @@ function showAddModal() {
 
 function showEditModal(id) {
     $.ajax({
-        url: "/admin/menu/edit/" + id,
+        url: "/admin/role/edit/" + id,
         type: 'get',
         success: function (response) {
             // console.log(response);
@@ -85,7 +84,7 @@ function deleteList(id) {
     }).then((function (e) {
         e.value ?
             $.ajax({
-                url: "/admin/menu/destroy/" + id,
+                url: "/admin/role/destroy/" + id,
                 type: 'get',
                 success: function (response) {
                     Swal.fire({
@@ -97,7 +96,7 @@ function deleteList(id) {
                             confirmButton: "btn btn-primary"
                         }
                     })
-                    tableMenu.ajax.reload();
+                    tableRole.ajax.reload();
                 },
                 error: function (response) {
                     Swal.fire({
@@ -123,7 +122,7 @@ function deleteList(id) {
     }))
 }
 
-var tableMenu = $('#tableMenu').DataTable({
+var tableRole = $('#tableRole').DataTable({
     processing: true,
     serverSide: true,
     searching: true,
@@ -178,8 +177,8 @@ var tableMenu = $('#tableMenu').DataTable({
 });
 
 
-$('#searchtableMenu').keyup(function () {
-    tableMenu.search($(this).val()).draw()
+$('#searchtableRole').keyup(function () {
+    tableRole.search($(this).val()).draw()
 });
 
 

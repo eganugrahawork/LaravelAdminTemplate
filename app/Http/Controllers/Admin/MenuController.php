@@ -336,7 +336,7 @@ class MenuController extends Controller {
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link" href="../../demo8/dist/apps/user-management/permissions.html">
+                    <a class="menu-link" href="/admin/role">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -352,7 +352,7 @@ class MenuController extends Controller {
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link" href="/admin/menu/index">
+                    <a class="menu-link" href="/admin/menu">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>

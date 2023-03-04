@@ -28,7 +28,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 Route::middleware('auth')->controller(MenuController::class)->group(function(){
-    Route::get('/admin/menu/index', 'index');
+    Route::get('/admin/menu', 'index');
     Route::get('/admin/menu/list', 'list');
     Route::get('/admin/menu/create', 'create');
     Route::get('/admin/menu/edit/{id}', 'edit');
@@ -39,7 +39,7 @@ Route::middleware('auth')->controller(MenuController::class)->group(function(){
 });
 
 Route::middleware('auth')->controller(RoleController::class)->group(function(){
-    Route::get('/admin/role/index', 'index');
+    Route::get('/admin/role', 'index');
     Route::get('/admin/role/list', 'list');
     Route::get('/admin/role/create', 'create');
     Route::get('/admin/role/edit/{id}', 'edit');
@@ -49,7 +49,7 @@ Route::middleware('auth')->controller(RoleController::class)->group(function(){
 });
 
 Route::middleware('auth')->controller(MenuAccessController::class)->group(function(){
-    Route::get('/admin/menuaccess/index', 'index');
+    Route::get('/admin/menuaccess', 'index');
     Route::get('/admin/menuaccess/list', 'list');
     Route::get('/admin/menuaccess/access/{id}', 'access');
     Route::get('/admin/menuaccess/listaccess/{id}', 'listaccess');

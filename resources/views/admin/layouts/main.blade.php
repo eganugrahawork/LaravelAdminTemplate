@@ -66,10 +66,7 @@
     <!--end::Page Custom Javascript-->
     <!--end::Javascript-->
 
-    <script>
-
-
-    </script>
+    <script></script>
 
 
 
@@ -94,6 +91,16 @@
     @endif
     {{-- End Menu --}}
 
+    {{-- BreadCrumb --}}
+    <script>
+        var path1 = pathArray[2].charAt(0).toUpperCase() + pathArray[2].slice(1);
+        var path2 = pathArray[3].charAt(0).toUpperCase() + pathArray[3].slice(1) || "Default";
+        $('#breadCrumbTitle').html('<li class="breadcrumb-item text-muted"><a href="' + window.location.pathname +
+            '" class="text-muted text-hover-primary">' + path1 +
+            '</a></li><li class="breadcrumb-item"><span class="bullet bg-gray-200 w-5px h-2px"></span></li><li class="breadcrumb-item text-dark">' +
+            path2 + '</li>')
+    </script>
+    {{-- End BreadCrumb --}}
 
     @yield('js')
 </body>
