@@ -3,8 +3,6 @@
 
 $('#title-header').html('Menu');
 
-var pathArray = window.location.pathname.split('/');
-// Contoh nilai dari variabel pathArray: ["", "admin", "dashboard"]
 
 
 function showAddModal() {
